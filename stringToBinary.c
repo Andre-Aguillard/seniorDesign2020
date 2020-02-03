@@ -4,16 +4,11 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-
-long long convert(int n);
 
 // When this function is called from main it will print
 // the binary values of each string to an output file.
 void strToBinary(char* s)
 {
-    int n = sizeof(s);
-    char bin[n];
     FILE *outputFile; //Creates the file pointer
     outputFile = fopen("/binaryOutput-str2B.txt", "w");
     printf("Made it past fopen - outputFile\n");
