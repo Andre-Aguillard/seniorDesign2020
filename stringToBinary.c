@@ -10,7 +10,7 @@
 void strToBinary(char* s)
 {
     FILE *outputFile; //Creates the file pointer
-    outputFile = fopen("/binaryOutput-str2B.txt", "w");
+    outputFile = fopen("binaryOutput.txt", "w+");
     printf("Made it past fopen - outputFile\n");
 
     // Each value of s is a character which is then converted to binary
@@ -18,16 +18,16 @@ void strToBinary(char* s)
     {
         char *binary = malloc(9);
         int num = s[i];
-        printf("Converting: %c to Binary\n", num);
+        // printf("Converting: %c (%d) to Binary\n", num, num);
         for (int i=7; i>=0; i--)
         {
             binary[i] = ((num%2)==0) ? '0' : '1';
+            //printf("Value of binary[i] is %d",binary[i]);
             num /= 2;
         }
-        printf("Printing %s to outputFile", binary);
-        fprintf(outputFile, "%s\n", binary);
+        //printf("Printing %s to outputFile", binary);
+        fprintf(outputFile, "%s ", binary);
     }
-
     fclose(outputFile);
     printf("Exiting subprogram\n");
 }
