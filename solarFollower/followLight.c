@@ -5,6 +5,7 @@
 */
 #include <stdio.h>
 #include <pigpio.h>
+#include "mcp3008.h"
 
 int main(int argc, char *argv[])
 {
@@ -34,12 +35,14 @@ int main(int argc, char *argv[])
      while(1) //Do the following continuously
      {
      // Input code relating to the analog read stuff here
-     /*
-	lt read top left
-	rt read top right
-	ld read down left
-	rd read down right
-
+     	int lt = mcp3008_value(0, 11, 9, 8); //read top left
+	printf(%d, lt);
+	int rt = mcp3008_value(1, 11, 9, 8); // read top right
+	int ld = mcp3008_value(2, 11, 9, 8); //read down left
+	int rd = mcp3008_value(3, 11, 9, 8); //read down right
+	printf(%d, rt);
+	printf(%d, ld);
+	printf(%d, rd);
      */
   
      int dtime = 10;
@@ -53,7 +56,8 @@ int main(int argc, char *argv[])
      dvert = avt-avd; // check the difference of up and down
      dhoriz = avl - avr; // check the difference of left and right
      
-     if (-1*tol > dvert || dvert > tol) // check if the difference is in the tolerance
+/*
+     if (-1*tol > dvert || dvert > tol) // check if the difference is in the tolerance else change the vertical angle
      {
      if (avt > avd)
      {
@@ -62,7 +66,7 @@ int main(int argc, char *argv[])
 
 
      }
-
+*/
      start = time_time();
      while((time_time() - start) < 60.0)
      {
