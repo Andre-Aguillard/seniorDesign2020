@@ -98,15 +98,18 @@ int main(int argc, char*argv[])
         float imag = 127 * cimagf(x);
 
         // convert the numbers to  8 bit signed integer format
-        int8_t Ivalue[1];
-        int8_t Qvalue[1];
-        Ivalue[1] = (int8_t) real;
-        Qvalue[1] = (int8_t) imag;
+        int8_t Ivalue;
+        int8_t Qvalue;
+        Ivalue = (int8_t) real;
+        Qvalue = (int8_t) imag;
         // write binary to output file
         fwrite(&Ivalue, 1, 1, fid);
         fwrite(&Qvalue, 1, 1, fid);
+        //read the binary data and print it to terminal
+        int8_t num;
+        printf("%ld\n",fread(&num,1,1,fid));
 
-        // modulate the second half of the integer
+        //modulate the second half of the integer
         modem_modulate(mod, (0xF&sym_in), &x);
 
         // Map each component of the complex symbol to a range of -127 t0 127
@@ -114,8 +117,8 @@ int main(int argc, char*argv[])
         imag = 127 * cimagf(x);
 
         // convert the numbers to  8 bit signed integer format
-        Ivalue[1] = (int8_t) real;
-        Qvalue[1] = (int8_t) imag;
+        Ivalue = (int8_t) real;
+        Qvalue = (int8_t) imag;
         // write binary to output file
         fwrite(&Ivalue, 1, 1, fid);
         fwrite(&Qvalue, 1, 1, fid);
