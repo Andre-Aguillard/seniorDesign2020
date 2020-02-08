@@ -78,7 +78,7 @@ int main(int argc, char*argv[])
     modem_print(mod);
 
     // open output file
-    FILE*fid = fopen(OUTPUT_FILENAME,"wb");
+    FILE*fid = fopen(OUTPUT_FILENAME,"wb+");
 
     unsigned int sym_in; // modulated symbol
     unsigned int num_symbols = 1<<bps;
@@ -105,9 +105,7 @@ int main(int argc, char*argv[])
         // write binary to output file
         fwrite(&Ivalue, 1, 1, fid);
         fwrite(&Qvalue, 1, 1, fid);
-        //read the binary data and print it to terminal
-        int8_t num;
-        printf("%ld\n",fread(&num,1,1,fid));
+
 
         //modulate the second half of the integer
         modem_modulate(mod, (0xF&sym_in), &x);
@@ -123,7 +121,18 @@ int main(int argc, char*argv[])
         fwrite(&Ivalue, 1, 1, fid);
         fwrite(&Qvalue, 1, 1, fid);
 
+        //fread(&num,1,1,fid);
+        //printf("%hd\n",num);
+
     }
+    //read the binary data and print it to terminal ***this kindof works
+    int8_t num[1000];
+    fread(num,1,1,fid);
+    for (int i=0; i <40; i++)
+    {
+         printf("%hd\n",num[i]);
+    }
+
 
     fclose(fid);
     printf("results written to %s.\n", OUTPUT_FILENAME);
