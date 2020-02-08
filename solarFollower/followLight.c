@@ -5,11 +5,16 @@
 */
 #include <stdio.h>
 #include <pigpio.h>
-#include "mcp3008.h"
+#include <wiringPi.h>
+#include <mcp3004.h>
+#include <wiringPiSPI.h>
+
+#define BASE 100
+#define SPI_CHAN 0
 
 int main(int argc, char *argv[])
 {
-     double start;
+  /*   double start;
      if (gpioInitialise()<0)
      {
           fprintf(stderr, "pigpio initalisation failed\n");
@@ -30,21 +35,31 @@ int main(int argc, char *argv[])
      // Set servo pulses | updates servos at 50Hz
      gpioServo(26, 1500); //Move servo to it's midpoint
      gpioServo(19, 1500); //Move servo to it's midpoint
-     
+    */
+	wiringPiSetup();
+ 	int i;
+	mcp3004Setup(BASE,SPI_CHAN);
+	
      // initalize the SPI 
      while(1) //Do the following continuously
      {
+	for(i=0;i<8;i++)printf("Channel %d: value%4d\n",i,analogRead(BASE+i));
+	printf("\n");
+	usleep(500000);
+	
      // Input code relating to the analog read stuff here
-     	int lt = mcp3008_value(0, 11, 9, 8); //read top left
-	printf(%d, lt);
+     	
+	/* int lt = mcp3008_value(0, 11, 9, 8); //read top left
+	printf("%d", lt);
 	int rt = mcp3008_value(1, 11, 9, 8); // read top right
 	int ld = mcp3008_value(2, 11, 9, 8); //read down left
 	int rd = mcp3008_value(3, 11, 9, 8); //read down right
-	printf(%d, rt);
-	printf(%d, ld);
-	printf(%d, rd);
-     */
-  
+	printf("%d", rt);
+	printf("%d", ld);
+	printf("%d", rd);
+    	*/
+	
+/*  
      int dtime = 10;
      int tol = 50;
 
@@ -56,7 +71,6 @@ int main(int argc, char *argv[])
      dvert = avt-avd; // check the difference of up and down
      dhoriz = avl - avr; // check the difference of left and right
      
-/*
      if (-1*tol > dvert || dvert > tol) // check if the difference is in the tolerance else change the vertical angle
      {
      if (avt > avd)
@@ -66,7 +80,7 @@ int main(int argc, char *argv[])
 
 
      }
-*/
+
      start = time_time();
      while((time_time() - start) < 60.0)
      {
@@ -75,6 +89,7 @@ int main(int argc, char *argv[])
 	  gpioWrite(21,0);
 	  time_sleep(0.5);
      }
-     gpioTerminate();
-     return 0;
+     gpioTerminate();*/
+}     
+return 0;
 }
