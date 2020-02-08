@@ -13,35 +13,30 @@ Output File is : qamConversion.txt
 #include <getopt.h>
 #include <liquid/liquid.h>
 
-#define OUTPUT_FILENAME "qamConversion.txt"
+#define OUTPUT_FILENAME "qamConversion"
 
 // print usage/help message
 void usage()
 {
     printf("modem_example [options]\n");
     printf("  h     : print help\n");
-    printf("  v/q   : verbose/quiet\n");
-    printf("  m     : modulation scheme (qam128 default)\n");
+    printf("  m     : modulation scheme (qam16 default)\n");
     liquid_print_modulation_schemes();
 }
-
 
 int main(int argc, char*argv[])
 {
     // create mod/demod objects
-    modulation_scheme ms = LIQUID_MODEM_QAM128;
-    int verbose = 1;
+    modulation_scheme ms = LIQUID_MODEM_QAM16;
     FILE*inputFile;
     int dopt;
     char *filename;
     char *fileContents;
     unsigned int lSize;
 
-    while ((dopt = getopt(argc,argv,"hvqmf:")) != EOF) {
+    while ((dopt = getopt(argc,argv,"hmf:")) != EOF) {
         switch (dopt) {
         case 'h':   usage();        return 0;
-        case 'v':   verbose = 1;    break;
-        case 'q':   verbose = 0;    break;
         case 'm':
             ms = liquid_getopt_str2mod(optarg);
             if (ms == LIQUID_MODEM_UNKNOWN) {
@@ -75,7 +70,6 @@ int main(int argc, char*argv[])
 
     // create the modem objects
     modem mod   = modem_create(ms);
-    modem demod = modem_create(ms);
 
     // ensure bits/symbol matches modem description (only
     // applicable to certain specific modems)
@@ -84,42 +78,54 @@ int main(int argc, char*argv[])
     modem_print(mod);
 
     // open output file
-    FILE*fid = fopen(OUTPUT_FILENAME,"w");
+    FILE*fid = fopen(OUTPUT_FILENAME,"wb");
 
     unsigned int sym_in; // modulated symbol
-    unsigned int s; // demodulated symbol
     unsigned int num_symbols = 1<<bps;
     float complex x;
-    unsigned int num_sym_errors = 0;
-    unsigned int num_bit_errors = 0;
 
     // Iterate through each Symbol in the input file and modulate it
     for (int i=0; fileContents[i]!='\0' && i< num_symbols; i++)
     {
 
-        sym_in = fileContents[i];
-        modem_modulate(mod, sym_in, &x);
-        modem_demodulate(demod, x, &s);
+        sym_in = fileContents[i]; //This stores the integer value of the character
 
-        if (verbose)
-            printf("%4u : %12.8f + j*%12.8f\n", sym_in, crealf(x), cimagf(x));
+        // modulate the first half of the integer
+        modem_modulate(mod, ((0xF0&sym_in)/16), &x);
 
-        num_sym_errors += sym_in == s ? 0 : 1;
-        num_bit_errors += count_bit_errors(sym_in,s);
+        // Map each component of the complex symbol to a range of -127 t0 127
+        float real = 127 * crealf(x);
+        float imag = 127 * cimagf(x);
 
-        // write symbol to output file
-        fprintf(fid,"%c -> c(%3u) = %12.4e + j*%12.4e;\n", sym_in, sym_in, crealf(x), cimagf(x));
-        //fprintf(fid,"i_str{%3u} = [num2str(%3u)];\n", i+1, i);
+        // convert the numbers to  8 bit signed integer format
+        int8_t Ivalue[1];
+        int8_t Qvalue[1];
+        Ivalue[1] = (int8_t) real;
+        Qvalue[1] = (int8_t) imag;
+        // write binary to output file
+        fwrite(&Ivalue, 1, 1, fid);
+        fwrite(&Qvalue, 1, 1, fid);
+
+        // modulate the second half of the integer
+        modem_modulate(mod, (0xF&sym_in), &x);
+
+        // Map each component of the complex symbol to a range of -127 t0 127
+        real = 127 * crealf(x);
+        imag = 127 * cimagf(x);
+
+        // convert the numbers to  8 bit signed integer format
+        Ivalue[1] = (int8_t) real;
+        Qvalue[1] = (int8_t) imag;
+        // write binary to output file
+        fwrite(&Ivalue, 1, 1, fid);
+        fwrite(&Qvalue, 1, 1, fid);
+
     }
-    printf("num sym errors: %4u / %4u\n", num_sym_errors, lSize);
-    printf("num bit errors: %4u / %4u\n", num_bit_errors, lSize);
-
 
     fclose(fid);
     printf("results written to %s.\n", OUTPUT_FILENAME);
 
     modem_destroy(mod);
-    modem_destroy(demod);
     fclose(inputFile);
     free(fileContents);
 
