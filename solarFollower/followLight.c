@@ -25,9 +25,9 @@ void moveUpper(int B)
     gpioServo(GPIO_UPPER, B);
 }
 
-float map(int x) //returns teh input for the servos to move to.
+int map(int x) //returns teh input for the servos to move to.
 {
-    float y = 500/524 * x + 1500;
+    int y = 500/524 * x + 1500;
     return y;
 }
 
@@ -82,29 +82,8 @@ int main(int argc, char *argv[])
               moveUpper(map(B));
           }
 
-
-
           usleep(500000);
 
-
-/*
-     int dtime = 10;
-     int tol = 50;
-
-
-     dvert = avt-avd; // check the difference of up and down
-     dhoriz = avl - avr; // check the difference of left and right
-
-     if (-1*tol > dvert || dvert > tol) // check if the difference is in the tolerance else change the vertical angle
-     {
-     if (avt > avd)
-     {
-
-
-
-
-     }
-     gpioTerminate();*/
 }
 gpioTerminate();
 return 0;
