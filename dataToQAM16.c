@@ -5,7 +5,7 @@ Compile: gcc -Wall -o dataToQAM128 dataToQAM128.c -lliquid
 
 Run program: ./dataToQAM128
 
-Output File is : qamConversion.txt
+Output File is : qamConversion
 */
 
 #include <stdlib.h>
@@ -21,6 +21,8 @@ void usage()
     printf("modem_example [options]\n");
     printf("  h     : print help\n");
     printf("  m     : modulation scheme (qam16 default)\n");
+    printf("  f     : input file address\n");
+    printf("  d     : print debug\n");
     liquid_print_modulation_schemes();
 }
 
@@ -28,13 +30,14 @@ int main(int argc, char*argv[])
 {
     // create mod/demod objects
     modulation_scheme ms = LIQUID_MODEM_QAM16;
-    FILE*inputFile;
+    FILE*inputFile = NULL;
     int dopt;
     char *filename;
     char *fileContents;
-    unsigned int lSize;
+    unsigned int lSize = 0;
+    int debug = 0;
 
-    while ((dopt = getopt(argc,argv,"hmf:")) != EOF) {
+    while ((dopt = getopt(argc,argv,"hmdf:")) != EOF) {
         switch (dopt) {
         case 'h':   usage();        return 0;
         case 'm':
@@ -44,6 +47,10 @@ int main(int argc, char*argv[])
                 return 1;
             }
             break;
+        case 'd' :
+            debug = 0;
+            printf("Debug is on.\n");
+            break;
         case 'f' :
 
             filename = optarg;
@@ -52,22 +59,25 @@ int main(int argc, char*argv[])
             inputFile = fopen(optarg,"r");
             if( !inputFile ) perror(filename), exit(1);
 
-            fseek(inputFile , 0L , SEEK_END);
-            lSize = ftell( inputFile );
+            fseek(inputFile, 0, SEEK_END);
+            lSize = ftell(inputFile);
             rewind( inputFile );
             /* allocate memory for entire content */
-            fileContents = calloc( 1, lSize+1 );
+            fileContents = malloc((lSize+1)*sizeof(*inputFile) );
             if( !fileContents ) fclose(inputFile),fputs("memory alloc fails",stderr),exit(1);
 
             /* copy the file into the fileContents */
-            if( 1!=fread( fileContents , lSize, 1 , inputFile) )
-                fclose(inputFile),free(fileContents),fputs("entire read fails",stderr),exit(1);
+            fread( fileContents, lSize, 1 , inputFile);
+            /* NULL terminate the buffer */
+            fileContents[lSize] = '\0';
+
             break;
         default:
             exit(1);
         }
     }
-
+    // print the file contents if debug is once
+    if (debug==1) printf("Input: %s\n\n",fileContents);
     // create the modem objects
     modem mod   = modem_create(ms);
 
@@ -85,7 +95,7 @@ int main(int argc, char*argv[])
     float complex x;
 
     // Iterate through each Symbol in the input file and modulate it
-    for (int i=0; fileContents[i]!='\0' && i< num_symbols; i++)
+    for (int i=0; fileContents[i]!='\0'; i++)
     {
 
         sym_in = fileContents[i]; //This stores the integer value of the character
@@ -125,14 +135,16 @@ int main(int argc, char*argv[])
         //printf("%hd\n",num);
 
     }
-    //read the binary data and print it to terminal ***this kindof works
-    int8_t num[1000];
-    fread(num,1,1,fid);
-    for (int i=0; i <40; i++)
+    //read the binary data and print it to terminal if debug on ***this kindof works
+    if ((debug) == 1)
     {
-         printf("%hd\n",num[i]);
+        int8_t num[1000];
+        fread(num,1,1,fid);
+        for (int i=0; i <4000; i++)
+        {
+             printf("%hd\n",num[i]);
+        }
     }
-
 
     fclose(fid);
     printf("results written to %s.\n", OUTPUT_FILENAME);
