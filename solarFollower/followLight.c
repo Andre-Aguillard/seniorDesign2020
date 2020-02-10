@@ -1,35 +1,38 @@
 /*
      followLight.c
-     gcc -o followLight followLight.c -lpigpio -lrt -lpthread
+     gcc -o followLight followLight.c -lpigpio -lrt -lpthread -lwiringPi
      sudo ./followLight
 */
 #include <stdio.h>
 #include <pigpio.h>
+#include <math.h>
 #include <wiringPi.h>
 #include <mcp3004.h>
 #include <wiringPiSPI.h>
 
 #define BASE 100
-#define SPI_CHAN 0
+#define SPI_CHAN 0	
 #define GPIO_UPPER 21
 #define GPIO_LOWER 20
-int map(int x);
+
+//int map(int x);
 
 void moveLower(int A)
 {
     gpioServo(GPIO_LOWER, A);
-    printf("%d\n",A);
+    printf("Moving the lower servo to %d\n", A);
 }
 
 void moveUpper(int B)
 {
     gpioServo(GPIO_UPPER, B);
-    printf("%d\n",B);
+    printf("Moving the upper servo to %d\n", B);
 }
 
-int map(int x) //returns teh input for the servos to move to.
-{
-    int y = 500/524 * x + 1500;
+int map(signed int x)  	//returns the input for the servos to move to.
+{			// Servo range is 600 to 2300 , LDR range is 0 to 1000
+    int y = ((0.85 * x)+1450);
+    printf("The value of y is %d\n\n",y);
     return y;
 }
 
@@ -41,14 +44,11 @@ int main(int argc, char *argv[])
           fprintf(stderr, "pigpio initalisation failed\n");
           return 1;
       }
-      // Setup pins for Servo output
-      gpioSetMode(GPIO_LOWER, PI_OUTPUT); //Horizontal Servo output
-      gpioSetMode(GPIO_UPPER, PI_OUTPUT); //Vertical Servo output
-
+ 
       // Set servo pulses | updates servos at 50Hz
-      gpioServo(GPIO_LOWER, 1500); //Move servo to it's midpoint LOWER
+      gpioServo(GPIO_LOWER, 1450); //Move servo to it's midpoint LOWER
 
-      gpioServo(GPIO_UPPER, 1500); //Move servo to it's midpoint UPPER
+      gpioServo(GPIO_UPPER, 1450); //Move servo to it's midpoint UPPER
 
       wiringPiSetup();
       int i;
@@ -58,37 +58,38 @@ int main(int argc, char *argv[])
       while(1) //Do the following continuously
       {
 
-
           int tr = analogRead(BASE+ 0); // Top right
           int tl = analogRead(BASE+ 1); // Top Left
           int br = analogRead(BASE+ 6); // Bottom Right
           int bl = analogRead(BASE+ 7); // Bottom Left
+	 
+	  printf("TopRight =%d \nTopLeft =%d \nBottomRight =%d \nBottomLeft =%d\n", tr,tl,br,bl);
 
-          for(i=0;i<2;i++)printf("Channel %d: value%4d\n",i,analogRead(BASE+i));
-          for(i=6;i<8;i++)printf("Channel %d: value%4d\n",i,analogRead(BASE+i));
-          printf("\n");
-
-          int avgRight = (tr+tl)/2;
+          int avgRight = (tr+br)/2;
           int avgLeft = (tl+bl)/2;
           int avgBottom = (br+bl)/2;
           int avgTop = (tr+tl)/2;
-
-          int A = avgLeft - avgRight;
-          int B = avgTop - avgBottom;
-
+	  
+	  //printf(" Average Right: %d\n Average Left: %d\n Average Bottom: %d\n AverageTop: %d\n\n", avgRight, avgLeft, avgBottom, avgTop);
+	  
+          signed int A = avgLeft - avgRight;
+          signed int B = avgTop - avgBottom;
+	  printf("Value of A = %d\n",A);
+	  printf("Value of B = %d\n\n",B);
+	  
           if ((A > 0 && B > 0) || (A < 0 && B > 0))
           {
               moveLower(map(A));
               moveUpper(map(B));
           }
 
-          if ((A > 0 && B > 0) || (A < 0 && B > 0))
+          else if ((A < 0 && B < 0) || (A > 0 && B < 0))
           {
-              moveLower(map(A));
+              moveLower(map(-A));
               moveUpper(map(B));
-          }
-
-          sleep(3); // Wait 10 seconds
+          } 
+	  	
+          sleep(5); // Wait 5 seconds
 
 }
 gpioTerminate();
