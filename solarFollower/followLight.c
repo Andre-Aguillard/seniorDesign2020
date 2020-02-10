@@ -13,7 +13,7 @@
 #define SPI_CHAN 0
 #define GPIO_UPPER 20
 #define GPIO_LOWER 21
-float map(int x);
+int map(int x);
 
 void moveLower(int A)
 {
