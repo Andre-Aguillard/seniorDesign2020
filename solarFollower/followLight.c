@@ -11,18 +11,20 @@
 
 #define BASE 100
 #define SPI_CHAN 0
-#define GPIO_UPPER 20
-#define GPIO_LOWER 21
+#define GPIO_UPPER 21
+#define GPIO_LOWER 20
 int map(int x);
 
 void moveLower(int A)
 {
     gpioServo(GPIO_LOWER, A);
+    printf("%d\n",A);
 }
 
 void moveUpper(int B)
 {
     gpioServo(GPIO_UPPER, B);
+    printf("%d\n",B);
 }
 
 int map(int x) //returns teh input for the servos to move to.
@@ -55,13 +57,14 @@ int main(int argc, char *argv[])
       // initalize the SPI
       while(1) //Do the following continuously
       {
-          for(i=0;i<8;i++)printf("Channel %d: value%4d\n",i,analogRead(BASE+i));
+          for(i=0;i<2;i++)printf("Channel %d: value%4d\n",i,analogRead(BASE+i));
+          for(i=6;i<7;i++)printf("Channel %d: value%4d\n",i,analogRead(BASE+i));
           printf("\n");
 
           int tr = analogRead(BASE+ 0); // Top right
-          int tl = analogRead(BASE+ 1); //
-          int br = analogRead(BASE+ 5); //
-          int bl = analogRead(BASE+ 7); //
+          int tl = analogRead(BASE+ 1); // Top Left
+          int br = analogRead(BASE+ 6); // Bottom Right
+          int bl = analogRead(BASE+ 7); // Bottom Left
 
           int avgRight = (tr+tl)/2;
           int avgLeft = (tl+bl)/2;
@@ -76,13 +79,14 @@ int main(int argc, char *argv[])
               moveLower(map(A));
               moveUpper(map(B));
           }
+
           if ((A > 0 && B > 0) || (A < 0 && B > 0))
           {
               moveLower(map(A));
               moveUpper(map(B));
           }
 
-          usleep(500000);
+          usleep(1000000); // Wait 10 seconds
 
 }
 gpioTerminate();
