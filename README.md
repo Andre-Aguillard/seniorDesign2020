@@ -68,9 +68,11 @@ To run the program:
 
 3. The output file will then be qamConversion.txt located in the same directory
 
+## Solar Tracker
+The solar Tracker program can be foind in the Solar Tracker folder and the main program is followLight.c
 
 ## The Plan for the rest of the project
 The plan is to connect this program with the liquid dsp and HackRF tools to send
 data found in text files over the radio using QAM
 
-- AA 02/05/20
+- AA 02/12/20
