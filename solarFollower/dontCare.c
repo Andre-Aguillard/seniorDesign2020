@@ -1,6 +1,6 @@
 /*
      dontCare.c
-     gcc -o dontCare dontCare.c -lpigpio -lrt -lpthread
+     gcc -o dontCare dontCare.c -lpigpio -lrt -lpthread 
      sudo ./dontCare
 */
 #include <stdio.h>
@@ -21,13 +21,13 @@ int main(int argc, char *argv[])
     // initalize the SPI
     while(1) //Do the following continuously
     {
-        printf("Pot on channel 2: value%4d\n",analogRead(BASE+2));// Read from pin 2
-        printf("Thermistor on channel 8: value%4d\n",analogRead(BASE+8));
-        printf("LDR on channel 7: value%4d\n",analogRead(BASE+7));
+        printf("Pot on channel 3: value%4d\n",analogRead(BASE+3));// Read from pin 2
+        printf("LDR on channel 4: value%4d\n",analogRead(BASE+4));
+        printf("Thermistor on channel 5: value%4d\n",analogRead(BASE+5));
 
 
-        printf("\n")
-        usleep(500000);
+        printf("\n");
+        sleep(5);
     }
 return 0;
 }
