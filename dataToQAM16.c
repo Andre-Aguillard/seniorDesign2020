@@ -1,9 +1,9 @@
 /*
 dataToQAM128.c
 
-Compile: gcc -Wall -o dataToQAM128 dataToQAM128.c -lliquid
+Compile: gcc -Wall -o dataToQAM16 dataToQAM16.c -lliquid
 
-Run program: ./dataToQAM128
+Run program: ./dataToQAM16
 
 Output File is : qamConversion
 */
