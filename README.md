@@ -1,10 +1,13 @@
 # seniorDesign2020
 
-This project contains two key programs:
+This project contains four key programs:
       **stringToBinary.c** which converts a text file specified in the command line
       and located in the same directory as the program to a string of binary values.
-      **dataToQAM128.c** which uses the liquid dsp library to convert a text file to
+      **dataToQAM16.c** which uses the liquid dsp library to convert a text file to
       IQ values represented as complex numbers.
+      **followLight.c** which is the solar follower/ solar tracker program.
+      **QAM16ToData.c** is the program for demodulating and reading the transmitted
+      data from the HACK_RF using the RTL-SDR.
 
 ## stringToBinary.c
 
@@ -14,12 +17,12 @@ To run the program:
 2. Run the command
 ```
      gcc stringToBinary.c -o stringToBinary && ./stringToBinary {filename.txt}
-``` 
+```
    Type the name of your file to replace {filename.txt}
 
 3. The output file will then be binaryOutput.txt located in the same directory
 
-## dataToQAM128.c
+## dataToQAM16.c
 To set up the liquid dsp library do the following:
 
 ### Installation and Dependencies
@@ -68,8 +71,23 @@ To run the program:
 
 3. The output file will then be qamConversion.txt located in the same directory
 
+## QAM16ToData.c
+
+The rtl-sdr tools can be found in the folder rtl-sdr tools and are used for receiving and demodulating
+signals at a specific frequency.
+
+more information about the tools can be found here: https://osmocom.org/projects/rtl-sdr/wiki/Rtl-sdr
+
 ## Solar Tracker
-The solar Tracker program can be foind in the Solar Tracker folder and the main program is followLight.c
+The solar Tracker program can be found in the Solar Follower folder and the main program is followLight.c
+
+## SENDING AND RECIEVING data
+
+To send data from the HACK-RF use the following:
+
+To receive use the following:
+
+
 
 ## The Plan for the rest of the project
 The plan is to connect this program with the liquid dsp and HackRF tools to send
