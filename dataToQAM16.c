@@ -1,9 +1,9 @@
 /*
-dataToQAM128.c
+dataToQAM16.c
 
 Compile: gcc -Wall -o dataToQAM16 dataToQAM16.c -lliquid
 
-Run program: ./dataToQAM16
+Run program: ./dataToQAM16 "filename"``
 
 Output File is : qamConversion
 */
@@ -76,7 +76,7 @@ int main(int argc, char*argv[])
             exit(1);
         }
     }
-    // print the file contents if debug is once
+    // print the file contents if debug is one
     if (debug==1) printf("Input: %s\n\n",fileContents);
     // create the modem objects
     modem mod   = modem_create(ms);
