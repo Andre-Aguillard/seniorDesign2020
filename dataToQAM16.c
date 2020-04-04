@@ -1,5 +1,8 @@
 /*
 dataToQAM16.c
+Program that modulates ASCII into QAM16
+Status: Working Code
+Next Step: add forward error correction after demodulator is complete.
 
 Compile: gcc -Wall -o dataToQAM16 dataToQAM16.c -lliquid
 

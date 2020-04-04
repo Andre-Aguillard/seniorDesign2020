@@ -1,5 +1,6 @@
 /*
 QAM16toData.c
+The demodulator program for going from QAM16 encoding to ASCII format.
 
 Compile: gcc -Wall -o QAM16toData QAM16toData.c -lliquid
 
@@ -48,7 +49,7 @@ int main(int argc, char*argv[])
             }
             break;
         case 'd' :
-            debug = 0;
+            debug = 1;
             printf("Debug is on.\n");
             break;
         case 'f' : /* Create the input file and read it's contents: */
@@ -77,14 +78,14 @@ int main(int argc, char*argv[])
     }
     // print the file contents if debug is one
     if (debug==1) printf("Input: %s\n\n",fileContents);
-    // create the modem objects
-    modem mod   = modem_create(ms);
+    // create the modem object
+    modem demod   = modem_create(ms);
 
     // ensure bits/symbol matches modem description (only
     // applicable to certain specific modems)
     unsigned int bps = modem_get_bps(mod);
 
-    modem_print(mod);
+    modem_print(demod);
 
     // open output file
     FILE*fid = fopen(OUTPUT_FILENAME,"wb+");
