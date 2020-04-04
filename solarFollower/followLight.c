@@ -15,17 +15,10 @@
 #define GPIO_LOWER 20
 int map(int x);
 
-void moveLower(int A)
-{
-    gpioServo(GPIO_LOWER, A);
-    printf("%d\n",A);
-}
+//void moveLower(int A)
 
-void moveUpper(int B)
-{
-    gpioServo(GPIO_UPPER, B);
-    printf("%d\n",B);
-}
+//void moveUpper(int B)
+
 
 int map(int x) //returns teh input for the servos to move to.
 {
@@ -78,14 +71,20 @@ int main(int argc, char *argv[])
 
           if ((A > 0 && B > 0) || (A < 0 && B > 0))
           {
-              moveLower(map(A));
-              moveUpper(map(B));
+              gpioServo(GPIO_LOWER, map(A));
+              printf("%d\n",A);
+
+              gpioServo(GPIO_UPPER, map(B));
+              printf("%d\n",B);
           }
 
           if ((A > 0 && B > 0) || (A < 0 && B > 0))
           {
-              moveLower(map(A));
-              moveUpper(map(B));
+            gpioServo(GPIO_LOWER, map(A));
+            printf("%d\n",map(A));
+
+            gpioServo(GPIO_UPPER, map(-B));
+            printf("%d\n",map(-B));
           }
 
           sleep(3); // Wait 10 seconds
