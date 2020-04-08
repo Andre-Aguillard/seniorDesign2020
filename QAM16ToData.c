@@ -94,10 +94,22 @@ int main(int argc, char*argv[])
     unsigned int num_symbols = 1<<bps;
     float complex x;
 
+    /* Thoughts:
+    Each ASCII character in the original file is broken down to it's binary equivalent.
+        For example A = 65 = 01000001 in binary
+    Then that binary representation of the integer is split into two four bit numbers.
+        Example: A = 0100 0001 = 4 and 1 in decimal
+    That new binary number is then passed into the modulate function, and the output
+    of that function is a complex number x.
+    The complex number x is then broken down to it's real and imaginary parts and
+    multiplied by 127
+
+
+    */
+
     // Iterate through each Symbol in the input file and demodulate it
     for (int i=0; fileContents[i]!='\0'; i++)
     {
-
         sym_in = fileContents[i]; //This stores the integer value of the character
 
         // modulate the first half of the integer

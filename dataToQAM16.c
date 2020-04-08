@@ -6,7 +6,8 @@ Next Step: add forward error correction after demodulator is complete.
 
 Compile: gcc -Wall -o dataToQAM16 dataToQAM16.c -lliquid
 
-Run program: ./dataToQAM16 "filename"``
+Run program: ./dataToQAM16 -f "filename"
+Run program with debug on: ./dataToQAM16 -f "filename" -d
 
 Output File is : qamConversion
 */
@@ -51,7 +52,7 @@ int main(int argc, char*argv[])
             }
             break;
         case 'd' :
-            debug = 0;
+            debug = 1;
             printf("Debug is on.\n");
             break;
         case 'f' :
@@ -80,7 +81,7 @@ int main(int argc, char*argv[])
         }
     }
     // print the file contents if debug is one
-    if (debug==1) printf("Input: %s\n\n",fileContents);
+    if (debug==1) printf("Input file: \n%s\n",fileContents);
     // create the modem objects
     modem mod   = modem_create(ms);
 
@@ -102,7 +103,7 @@ int main(int argc, char*argv[])
     {
 
         sym_in = fileContents[i]; //This stores the integer value of the character
-
+        if (debug==1)printf("%hd\n",(0xF0&sym_in)/16);
         // modulate the first half of the integer
         modem_modulate(mod, ((0xF0&sym_in)/16), &x);
 
@@ -115,11 +116,12 @@ int main(int argc, char*argv[])
         int8_t Qvalue;
         Ivalue = (int8_t) real;
         Qvalue = (int8_t) imag;
+        if (debug==1)printf("%d %i\n",Ivalue, Qvalue);
         // write binary to output file
         fwrite(&Ivalue, 1, 1, fid);
         fwrite(&Qvalue, 1, 1, fid);
 
-
+        if (debug==1) printf("%hd\n",(0xF&sym_in));
         //modulate the second half of the integer
         modem_modulate(mod, (0xF&sym_in), &x);
 
@@ -131,6 +133,8 @@ int main(int argc, char*argv[])
         Ivalue = (int8_t) real;
         Qvalue = (int8_t) imag;
         // write binary to output file
+        if (debug==1)printf("%d %i\n",Ivalue, Qvalue);
+
         fwrite(&Ivalue, 1, 1, fid);
         fwrite(&Qvalue, 1, 1, fid);
 
@@ -138,16 +142,16 @@ int main(int argc, char*argv[])
         //printf("%hd\n",num);
 
     }
-    //read the binary data and print it to terminal if debug on ***this kindof works
+    /* read the binary data and print it to terminal if debug on ***this kindof works
     if ((debug) == 1)
     {
         int8_t num[1000];
         fread(num,1,1,fid);
         for (int i=0; i <4000; i++)
         {
-             printf("%hd\n",num[i]);
+             printf("%hd",num[i]);
         }
-    }
+    } */
 
     fclose(fid);
     printf("results written to %s.\n", OUTPUT_FILENAME);
