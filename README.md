@@ -85,12 +85,18 @@ The solar Tracker program can be found in the Solar Follower folder and the main
 
 To send data from the HACK-RF use the following:
 
-To receive use the following:
+``` hackrf_transfer -f 900250000 -t qamConversion ```
 
+For now to recieve use the following:
 
+ - navigate to the rtl-sdr tools folder: cd ".../rtl-sdr tools"
+ Run the command: 
+ ``` rtl_sdr data -f 900250000 ```
+ - this tunes to 900.25 MHz and outputs the collected signal to a file named data. 
 
 ## The Plan for the rest of the project
 The plan is to connect this program with the liquid dsp and HackRF tools to send
-data found in text files over the radio using QAM
+data found in text files over the radio using QAM-16 and recieve using the RTL-SDR
+tools and demodulate the signal. 
 
-- AA 02/12/20
+- AA 04/707/20
