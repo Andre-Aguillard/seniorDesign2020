@@ -1,7 +1,7 @@
 /*
      sensorData.c
      Program for collecting sensor data and saving it as a data file
-     for transmission to the ground station.
+     for transmission to the ground station. Program only samples once right now.
      Compile:
      gcc -o sensorData sensorData.c -lpigpio -lwiringPi -lrt -lpthread
      Run:
@@ -9,7 +9,6 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <pigpio.h>
 #include <wiringPi.h>
 #include <mcp3004.h>
 #include <wiringPiSPI.h>
@@ -26,27 +25,20 @@ int main(int argc, char *argv[])
     // open output file
     FILE *fid = fopen(OUTPUT_FILENAME,"w+");
 
-    // initalize the SPI
-    for(int i =0; i<2; i++;) //Do the following continuously
-    {
-      // Collect data
-        int A = analogRead(BASE); // Read from pin 0
-        int B = analogRead(BASE+1); // Read from pin 1
-        int C =  analogRead(BASE+2); // Read from pin 2
-      // Save data to file
-        fprintf(fid,"Pot on channel 0: %d\n",A);
-        fprintf(fid,"LDR on channel 1: %d\n",B);
-        fprintf(fid,"Thermistor on channel 2: %d\n\n",C);
-      // print data to standard out
-        printf("Pot on channel 0: %d\n",A);
-        printf("LDR on channel 1: %d\n",B);
-        printf("Thermistor on channel 2: %d\n\n",C);
+    // Collect data
+      int A = analogRead(BASE); // Read from pin 0
+      int B = analogRead(BASE+1); // Read from pin 1
+      int C =  analogRead(BASE+2); // Read from pin 2
+    // Save data to file
+      fprintf(fid,"Pot on channel 0: %d\n",A);
+      fprintf(fid,"LDR on channel 1: %d\n",B);
+      fprintf(fid,"Thermistor on channel 2: %d\n\n",C);
+    // print data to standard out
+      printf("Pot on channel 0: %d\n",A);
+      printf("LDR on channel 1: %d\n",B);
+      printf("Thermistor on channel 2: %d\n\n",C);
 
-        fclose(fid);
-        printf("Results written to %s.\n", OUTPUT_FILENAME);
-        printf("Next update will be in %d seconds\n", WAIT_TIME);
-
-        sleep(WAIT_TIME);
-    }
-return 0;
+      printf("Results written to %s.\n", OUTPUT_FILENAME);
+      fclose(fid);
+      return 0;
 }
