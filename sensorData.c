@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     FILE *fid = fopen(OUTPUT_FILENAME,"w+");
 
     // initalize the SPI
-    while(1) //Do the following continuously
+    for(int i =0; i<2; i++;) //Do the following continuously
     {
       // Collect data
         int A = analogRead(BASE); // Read from pin 0
@@ -36,16 +36,16 @@ int main(int argc, char *argv[])
       // Save data to file
         fprintf(fid,"Pot on channel 0: %d\n",A);
         fprintf(fid,"LDR on channel 1: %d\n",B);
-        fprintf(fid,"Thermistor on channel 2: %d\n",C);
+        fprintf(fid,"Thermistor on channel 2: %d\n\n",C);
       // print data to standard out
         printf("Pot on channel 0: %d\n",A);
         printf("LDR on channel 1: %d\n",B);
-        printf("Thermistor on channel 2: %d\n",C);
+        printf("Thermistor on channel 2: %d\n\n",C);
 
-        printf("\n");
         fclose(fid);
         printf("Results written to %s.\n", OUTPUT_FILENAME);
         printf("Next update will be in %d seconds\n", WAIT_TIME);
+
         sleep(WAIT_TIME);
     }
 return 0;
