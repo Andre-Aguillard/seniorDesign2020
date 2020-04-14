@@ -3,7 +3,7 @@
      Program for collecting sensor data and saving it as a data file
      for transmission to the ground station.
      Compile:
-     gcc -o sensorData sensorData.c -lpigpio -lrt -lpthread
+     gcc -o sensorData sensorData.c -lpigpio -lwiringPi -lrt -lpthread
      Run:
      sudo ./sensorData
 */
@@ -17,7 +17,7 @@
 #define BASE 100
 #define SPI_CHAN 0
 #define OUTPUT_FILENAME "sensorData.txt"
-#define WAIT_TIME 5 //defines the time before new data is collected
+#define WAIT_TIME 8 //defines the time before new data is collected
 
 int main(int argc, char *argv[])
 {
@@ -34,18 +34,18 @@ int main(int argc, char *argv[])
         int B = analogRead(BASE+1); // Read from pin 1
         int C =  analogRead(BASE+2); // Read from pin 2
       // Save data to file
-        fprintf(fid,"Pot on channel 0: value%4d\n",A);
-        fprintf(fid,"LDR on channel 1: value%4d\n",B);
-        fprintf(fid,"Thermistor on channel 2: value%4d\n",C);
+        fprintf(fid,"Pot on channel 0: %d\n",A);
+        fprintf(fid,"LDR on channel 1: %d\n",B);
+        fprintf(fid,"Thermistor on channel 2: %d\n",C);
       // print data to standard out
-        printf("Pot on channel 0: value%4d\n",A);
-        printf("LDR on channel 1: value%4d\n",B);
-        printf("Thermistor on channel 2: value%4d\n",C);
+        printf("Pot on channel 0: %d\n",A);
+        printf("LDR on channel 1: %d\n",B);
+        printf("Thermistor on channel 2: %d\n",C);
 
         printf("\n");
         fclose(fid);
-        printf("results written to %s.\n", OUTPUT_FILENAME);
-        printf("Next update will be in %d seconds", WAIT_TIME);
+        printf("Results written to %s.\n", OUTPUT_FILENAME);
+        printf("Next update will be in %d seconds\n", WAIT_TIME);
         sleep(WAIT_TIME);
     }
 return 0;
