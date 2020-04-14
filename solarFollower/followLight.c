@@ -63,10 +63,10 @@ int main(int argc, char *argv[])
       while(1) //Do the following continuously
       {
 
-          int tr = analogRead(BASE+ 0); // Top right
-          int tl = analogRead(BASE+ 1); // Top Left
-          int br = analogRead(BASE+ 6); // Bottom Right
-          int bl = analogRead(BASE+ 7); // Bottom Left
+          int tr = analogRead(BASE+ 7); // Top right
+          int tl = analogRead(BASE+ 6); // Top Left
+          int br = analogRead(BASE+ 5); // Bottom Right
+          int bl = analogRead(BASE+ 4); // Bottom Left
 	 
 	  printf("TopRight =%d \nTopLeft =%d \nBottomRight =%d \nBottomLeft =%d\n\n", tr,tl,br,bl);
 
