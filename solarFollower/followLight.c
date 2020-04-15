@@ -79,18 +79,19 @@ int main(int argc, char *argv[])
 	  
           signed int A = avgLeft - avgRight;
           signed int B = avgTop - avgBottom;
+	  signed int C = sqrt(A*A+B*B);
 	  printf("Value of A = %d\n",A);
 	  printf("Value of B = %d\n\n",B);
 	  
           if ((A > 0 && B > 0) || (A < 0 && B > 0))
           {
               moveLower(mapLow(A));
-              moveUpper(mapUp(sqrt(A*A+B*B)));
+              moveUpper(mapUp(C));
           }
           else if ((A < 0 && B < 0) || (A > 0 && B < 0))
           {
               moveLower(mapLow(-A));
-              moveUpper(mapUp(-sqrt(A*A+B*B));
+              moveUpper(mapUp(-C);
           } 
 	  	
           sleep(2); // Wait 2 seconds
