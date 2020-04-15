@@ -1,6 +1,6 @@
 /*
      followLight.c
-     gcc -o followLight followLight.c -lpigpio -lrt -lpthread -lwiringPi
+     gcc -o followLight followLight.c -lpigpio -lrt -lpthread -lwiringPi -lm -ldl
      sudo ./followLight
 */
 #include <stdio.h>
@@ -79,8 +79,7 @@ int main(int argc, char *argv[])
 	  
           signed int A = avgLeft - avgRight;
           signed int B = avgTop - avgBottom;
-	  signed int C = (A*A)+(B*B);
-	  pow(C,0.5);
+	  signed int C = sqrt((A*A)+(B*B));
 	  printf("Value of A = %d\n",A);
 	  printf("Value of B = %d\n\n",B);
 	  
