@@ -79,7 +79,8 @@ int main(int argc, char *argv[])
 	  
           signed int A = avgLeft - avgRight;
           signed int B = avgTop - avgBottom;
-	  signed int C = sqrt(A*A+B*B);
+	  signed int C = (A*A)+(B*B);
+	  pow(C,0.5);
 	  printf("Value of A = %d\n",A);
 	  printf("Value of B = %d\n\n",B);
 	  
@@ -91,7 +92,7 @@ int main(int argc, char *argv[])
           else if ((A < 0 && B < 0) || (A > 0 && B < 0))
           {
               moveLower(mapLow(-A));
-              moveUpper(mapUp(-C);
+              moveUpper(mapUp(-C));
           } 
 	  	
           sleep(2); // Wait 2 seconds
