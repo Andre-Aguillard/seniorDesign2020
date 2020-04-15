@@ -25,7 +25,7 @@ void moveLower(int A)
 void moveUpper(int B)
 {
     gpioServo(GPIO_UPPER, B);
-    printf("Moving the upper servo to %d\n\n\n\n", B);
+    printf("Moving the upper servo to %d\n\n", B);
 }
 
 int mapUp(signed int x)  	//returns the input for the servos to move to.

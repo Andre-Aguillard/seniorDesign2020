@@ -1,1 +1,6 @@
 ABC
+This is a test File.
+Pot Data: 500
+Therm: 1000
+LDR: 125
+EOF
