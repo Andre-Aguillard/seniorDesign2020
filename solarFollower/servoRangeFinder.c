@@ -37,5 +37,6 @@ int main(int argc, char *argv[])
 return 0;
 }
 
-// Range for Upper Servo on GPIO pin 21, is 550 to 2250
-// Range for the Lower Servo on GPIO pin 20 is 500 to 2400
+// Range for Upper Servo on GPIO pin 21, is 550 to 2300 Mid is 1350
+// Range for the Lower Servo on GPIO pin 20 is 500 to 2350 Mid is 1350
+// 475 produces an error, so 500 may be as low as we can go. 

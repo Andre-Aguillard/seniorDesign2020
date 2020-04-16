@@ -30,13 +30,13 @@ void moveUpper(int B)
 
 int mapUp(signed int x)  	//returns the input for the servos to move to.
 {			// Servo range is 500 to 2300 , LDR range is 0 to 1000
-    int y = ((0.9 * x)+1400);
+    int y = ((0.9 * x)+1350);
    // printf("The value of y is %d\n\n",y);
     return y;
 }
 int mapLow(signed int x)  	//returns the input for the servos to move to.
-{			// Servo range is 500 to 2400 , LDR range is 0 to 1000
-    int y = ((0.95 * x)+1450);
+{			// Servo range is 500 to 2350 , LDR range is 0 to 1000
+    int y = ((0.925 * x)+1350);
    // printf("The value of y is %d\n\n",y);
     return y;
 }
