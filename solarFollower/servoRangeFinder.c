@@ -1,6 +1,6 @@
 /*
      servoRangeFinder.c
-     gcc -o servoRangeFinder servoRangeFinder.c -lpigpio -lrt -lpthread 
+     gcc -o servoRangeFinder servoRangeFinder.c -lpigpio -lrt -lpthread
      sudo ./servoRangeFinder
 */
 #include <stdio.h>
@@ -8,6 +8,7 @@
 #include <math.h>
 
 #define LOWERLIMIT 500
+#define MIDPOINT 1400
 #define UPPERLIMIT 2300
 
 int main(int argc, char *argv[])
@@ -17,14 +18,17 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "pigpio initalisation failed\n");
 		return 1;
 	}
- 
+
 	// Set servo pulses | updates servos at 50Hz
-	gpioServo(21, 1450); //Move servo to it's midpoint 
-		
+	gpioServo(21, 1450); //Move servo to it's midpoint
+
 	while(1)
 	{
 		gpioServo(21, LOWERLIMIT);
 		printf("Moving Servo to %d\n",LOWERLIMIT);
+		sleep(3);
+		gpioServo(21, MIDPOINT);
+		printf("Moving Servo to %d\n",MIDPOINT);
 		sleep(3);
 		gpioServo(21, UPPERLIMIT);
 		printf("Moving Servo to %d\n",UPPERLIMIT);
