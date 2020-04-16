@@ -11,7 +11,7 @@
 #include <wiringPiSPI.h>
 
 #define BASE 100
-#define SPI_CHAN 0	
+#define SPI_CHAN 0
 #define GPIO_UPPER 21
 #define GPIO_LOWER 20
 
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
           fprintf(stderr, "pigpio initalisation failed\n");
           return 1;
       }
- 
+
       // Set servo pulses | updates servos at 50Hz
       gpioServo(GPIO_LOWER, 1450); //Move servo to it's midpoint LOWER
 
@@ -63,26 +63,26 @@ int main(int argc, char *argv[])
       while(1) //Do the following continuously
       {
 
-          int tr = analogRead(BASE+ 7); // Top right
-          int tl = analogRead(BASE+ 6); // Top Left
-          int br = analogRead(BASE+ 5); // Bottom Right
-          int bl = analogRead(BASE+ 4); // Bottom Left
-	 
+          int tr = analogRead(BASE+ 3); // Top right
+          int tl = analogRead(BASE+ 2); // Top Left
+          int br = analogRead(BASE+ 1); // Bottom Right
+          int bl = analogRead(BASE+ 0); // Bottom Left
+
 	  printf("TopRight =%d \nTopLeft =%d \nBottomRight =%d \nBottomLeft =%d\n\n", tr,tl,br,bl);
 
           int avgRight = (tr+br)/2;
           int avgLeft = (tl+bl)/2;
           int avgBottom = (br+bl)/2;
           int avgTop = (tr+tl)/2;
-	  
+
 	  //printf(" Average Right: %d\n Average Left: %d\n Average Bottom: %d\n AverageTop: %d\n\n", avgRight, avgLeft, avgBottom, avgTop);
-	  
+
           signed int A = avgLeft - avgRight;
           signed int B = avgTop - avgBottom;
 	  signed int C = sqrt((A*A)+(B*B));
 	  printf("Value of A = %d\n",A);
 	  printf("Value of B = %d\n\n",B);
-	  
+
           if ((A > 0 && B > 0) || (A < 0 && B > 0))
           {
               moveLower(mapLow(A));
@@ -92,8 +92,8 @@ int main(int argc, char *argv[])
           {
               moveLower(mapLow(-A));
               moveUpper(mapUp(-C));
-          } 
-	  	
+          }
+
           sleep(2); // Wait 2 seconds
 
 }
