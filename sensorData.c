@@ -26,17 +26,17 @@ int main(int argc, char *argv[])
     FILE *fid = fopen(OUTPUT_FILENAME,"w+");
 
     // Collect data
-      int A = analogRead(BASE); // Read from pin 0
-      int B = analogRead(BASE+1); // Read from pin 1
-      int C =  analogRead(BASE+2); // Read from pin 2
+      int A = analogRead(BASE+7); // Read from pin 0
+      int B = analogRead(BASE+6); // Read from pin 1
+      int C =  analogRead(BASE+5); // Read from pin 2
     // Save data to file
-      fprintf(fid,"Pot on channel 0: %d\n",A);
-      fprintf(fid,"LDR on channel 1: %d\n",B);
-      fprintf(fid,"Thermistor on channel 2: %d\n\n",C);
+      fprintf(fid,"Pot on channel 7: %d\n",A);
+      fprintf(fid,"LDR on channel 6: %d\n",B);
+      fprintf(fid,"Thermistor on channel 5: %d\n\n",C);
     // print data to standard out
-      printf("Pot on channel 0: %d\n",A);
-      printf("LDR on channel 1: %d\n",B);
-      printf("Thermistor on channel 2: %d\n\n",C);
+      printf("Pot on channel 7: %d\n",A);
+      printf("LDR on channel 6: %d\n",B);
+      printf("Thermistor on channel 5: %d\n\n",C);
 
       printf("Results written to %s.\n", OUTPUT_FILENAME);
       fclose(fid);
