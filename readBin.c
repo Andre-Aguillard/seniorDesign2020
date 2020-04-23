@@ -56,13 +56,20 @@ int main(int argc, char*argv[])
             /* copy the file into the fileContents */
             fread(fileContents, lSize, 1 , inputFile); //try adding &
             /* NULL terminate the buffer */
-            fileContents[lSize] = '\0';
+            // fileContents[lSize] = '\0';
 
             break;
         default:
             exit(1);
         }
     }
-    printf("%s\n", fileContents);
-    printf("%d", fileContents);
+    //printf("%d", fileContents);
+    while (n) 
+    {
+        if (n & 1)
+            printf("1");
+        else 
+            print("0");
+        n >>= 1;   
+    }
 }
