@@ -18,7 +18,7 @@ Output File is : qamConversion
 #include <inttypes.h>
 #include <liquid/liquid.h>
 
-#define OUTPUT_FILENAME "qamConversion"
+#define OUTPUT_FILENAME "qamConversion.bin"
 
 // print usage/help message
 void usage()
