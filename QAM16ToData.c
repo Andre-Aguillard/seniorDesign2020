@@ -31,7 +31,7 @@ int main(int argc, char*argv[])
 {
     // create mod/demod objects
     modulation_scheme ms = LIQUID_MODEM_QAM16;
-    FILE*inputFile = NULL;
+    FILE*inputFile; // = NULL
     int dopt;
     char *filename;
     char *fileContents;
@@ -56,7 +56,7 @@ int main(int argc, char*argv[])
 
             filename = optarg;
             printf("Input Filename is: %s\n", filename);
-            inputFile = fopen(optarg,"r");
+            inputFile = fopen(optarg,"rb");
             if( !inputFile ) perror(filename), exit(1);
 
             fseek(inputFile, 0, SEEK_END);
@@ -67,7 +67,7 @@ int main(int argc, char*argv[])
             if( !fileContents ) fclose(inputFile),fputs("memory alloc fails",stderr),exit(1);
 
             /* copy the file into the fileContents */
-            fread( fileContents, lSize, 1 , inputFile);
+            fread(fileContents, lSize, 1 , inputFile);
             /* NULL terminate the buffer */
             fileContents[lSize] = '\0';
 
