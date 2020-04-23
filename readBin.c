@@ -23,7 +23,7 @@ void usage()
 
 int main(int argc, char*argv[])
 {
-    FILE*inputFile = NULL;
+    FILE*inputFile; // = NULL;
     int dopt;
     char *filename;
     char *fileContents;
@@ -54,7 +54,7 @@ int main(int argc, char*argv[])
             if( !fileContents ) fclose(inputFile),fputs("memory alloc fails",stderr),exit(1);
 
             /* copy the file into the fileContents */
-            fread(&fileContents, lSize, 1 , inputFile);
+            fread(fileContents, lSize, 1 , inputFile); //try adding &
             /* NULL terminate the buffer */
             fileContents[lSize] = '\0';
 
