@@ -8,9 +8,9 @@ Run using: ./readBin -f "inputFilename"
 */
 
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <getopt.h>
-#include <liquid/liquid.h>
 
 // print usage/help message
 void usage()
@@ -23,7 +23,7 @@ void usage()
 
 int main(int argc, char*argv[])
 {
-    FILE*inputFile; // = NULL;
+    FILE*inputFile = NULL;
     int dopt;
     char *filename;
     char *fileContents;
@@ -54,22 +54,19 @@ int main(int argc, char*argv[])
             if( !fileContents ) fclose(inputFile),fputs("memory alloc fails",stderr),exit(1);
 
             /* copy the file into the fileContents */
-            fread(fileContents, lSize, 1 , inputFile); //try adding &
+            fread(&fileContents, lSize, 1 , inputFile);
             /* NULL terminate the buffer */
-            // fileContents[lSize] = '\0';
+            fileContents[lSize] = '\0';
 
             break;
         default:
             exit(1);
         }
     }
-    //printf("%d", fileContents);
-    while (n) 
-    {
-        if (n & 1)
-            printf("1");
-        else 
-            print("0");
-        n >>= 1;   
+    printf("Done reading file");
+    int8_t subset[8];
+    for (int i=0; i<8;i++){
+      subset[i] = fileContents[i];
     }
+    printf("%s",subset);
 }
