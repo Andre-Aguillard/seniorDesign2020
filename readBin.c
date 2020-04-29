@@ -26,9 +26,8 @@ int main(int argc, char*argv[])
     FILE*inputFile = NULL;
     int dopt;
     char *filename;
-    char *fileContents;
+    signed char *fileContents;
     unsigned int lSize = 0;
-    char *bin;
     int debug = 0;
 
     while ((dopt = getopt(argc,argv,"hdf:")) != EOF) {
@@ -54,19 +53,21 @@ int main(int argc, char*argv[])
             if( !fileContents ) fclose(inputFile),fputs("memory alloc fails",stderr),exit(1);
 
             /* copy the file into the fileContents */
-            fread(&fileContents, lSize, 1 , inputFile);
-            /* NULL terminate the buffer */
-            fileContents[lSize] = '\0';
+            fread(fileContents, sizeof(signed char), lSize , inputFile);
 
             break;
         default:
             exit(1);
         }
     }
-    printf("Done reading file");
-    int8_t subset[8];
-    for (int i=0; i<8;i++){
-      subset[i] = fileContents[i];
+    printf("Done reading file \n");
+
+    // attempt to print the numbers
+    int i =0;
+    while(i < lSize)
+    {
+        int8_t Ivalue = fileContents[i];
+        printf("%d \n", Ivalue);
+        i += 1;
     }
-    printf("%s",subset);
 }

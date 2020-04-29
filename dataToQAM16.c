@@ -18,7 +18,7 @@ Output File is : qamConversion
 #include <inttypes.h>
 #include <liquid/liquid.h>
 
-#define OUTPUT_FILENAME "qamConversion.bin"
+#define OUTPUT_FILENAME "qamConversion"
 
 // print usage/help message
 void usage()
@@ -122,7 +122,7 @@ output file.\n");
         // modulate the first half of the integer
         modem_modulate(mod, ((0xF0&sym_in)/16), &x);
 
-        // Map each component of the complex symbol to a range of -127 t0 127
+        // Map each component of the complex symbol to a range of -127 to 127
         float real = 127 * crealf(x);
         float imag = 127 * cimagf(x);
         if (debug==1)printf("Ivalue (real): %f\nQvalue (imag): %f\n", real, imag);
@@ -131,6 +131,7 @@ output file.\n");
         int8_t Qvalue;
         Ivalue = (int8_t) real;
         Qvalue = (int8_t) imag;
+
         if (debug==1)
         {   printf("Ivalue = ");
             printf("%" PRIi8, Ivalue);
@@ -143,6 +144,7 @@ output file.\n");
         fwrite(&Ivalue, 1, 1, fid);
         fwrite(&Qvalue, 1, 1, fid);
 
+      // SECOND HALF
         if (debug==1) printf("second 4 bits: %hd\n",(0xF&sym_in));
         //modulate the second half of the integer
         modem_modulate(mod, (0xF&sym_in), &x);
@@ -166,20 +168,8 @@ output file.\n");
         fwrite(&Ivalue, 1, 1, fid);
         fwrite(&Qvalue, 1, 1, fid);
 
-        //fread(&num,1,1,fid);
-        //printf("%hd\n",num);
-
     }
-    /* read the binary data and print it to terminal if debug on ***this kindof works
-    if ((debug) == 1)
-    {
-        int8_t num[1000];
-        fread(num,1,1,fid);
-        for (int i=0; i <4000; i++)
-        {
-             printf("%hd",num[i]);
-        }
-    } */
+// use readBin.c to read the Binary File
 
     fclose(fid);
     printf("\n  Results written to %s.\n", OUTPUT_FILENAME);

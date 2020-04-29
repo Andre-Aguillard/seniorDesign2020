@@ -4,7 +4,7 @@ The demodulator program for going from QAM16 encoding to ASCII format.
 
 Compile: gcc -Wall -o QAM16toData QAM16toData.c -lliquid
 
-Run program: ./QAM128toData
+Run program: ./QAM128toData -f "filename"
 
 Output File is : data.txt
 */
@@ -13,8 +13,9 @@ Output File is : data.txt
 #include <stdio.h>
 #include <getopt.h>
 #include <liquid/liquid.h>
+#include <complex.h>
 
-#define OUTPUT_FILENAME "qamConversion.txt"
+#define OUTPUT_FILENAME "output.txt"
 
 // print usage/help message
 void usage()
@@ -34,7 +35,7 @@ int main(int argc, char*argv[])
     FILE*inputFile; // = NULL
     int dopt;
     char *filename;
-    char *fileContents;
+    signed char *fileContents;
     unsigned int lSize = 0;
     int debug = 0;
 
@@ -55,6 +56,7 @@ int main(int argc, char*argv[])
         case 'f' : /* Create the input file and read it's contents: */
 
             filename = optarg;
+
             printf("Input Filename is: %s\n", filename);
             inputFile = fopen(optarg,"rb");
             if( !inputFile ) perror(filename), exit(1);
@@ -67,33 +69,23 @@ int main(int argc, char*argv[])
             if( !fileContents ) fclose(inputFile),fputs("memory alloc fails",stderr),exit(1);
 
             /* copy the file into the fileContents */
-            fread(fileContents, lSize, 1 , inputFile);
-            /* NULL terminate the buffer */
-            fileContents[lSize] = '\0';
+            fread(fileContents, sizeof(signed char), lSize , inputFile);
 
             break;
         default:
             exit(1);
         }
     }
-    // print the file contents if debug is one
-    if (debug==1) printf("Input: %s\n\n",fileContents);
+
     // create the modem object
     modem demod   = modem_create(ms);
 
-    // ensure bits/symbol matches modem description (only
-    // applicable to certain specific modems)
-    unsigned int bps = modem_get_bps(mod);
-
-    modem_print(demod);
+    if(debug=1) modem_print(demod);
 
     // open output file
-    FILE*fid = fopen(OUTPUT_FILENAME,"wb+");
-
-    unsigned int sym_in; // modulated symbol
-    unsigned int num_symbols = 1<<bps;
-    float complex x;
-
+    FILE* fid = fopen(OUTPUT_FILENAME,"w+");
+    if (!fid) perror(OUTPUT_FILENAME), exit(1);
+    if (debug = 1) printf("Opened the output file.\n");
     /* Thoughts:
     Each ASCII character in the original file is broken down to it's binary equivalent.
         For example A = 65 = 01000001 in binary
@@ -104,64 +96,68 @@ int main(int argc, char*argv[])
     The complex number x is then broken down to it's real and imaginary parts and
     multiplied by 127
 
+    Each index of fileContents is either an I or a Q value.
+    print to a file using fprintf */
 
-    */
+    int i = 0;
+    if(debug = 1) printf("Line before the while loop\n");
 
-    // Iterate through each Symbol in the input file and demodulate it
-    for (int i=0; fileContents[i]!='\0'; i++)
+    while ( i  < lSize)
     {
-        sym_in = fileContents[i]; //This stores the integer value of the character
+        if (debug = 1) printf("In the while loop on i: %d", i );
+      //FIRST HALF
+        // Ivalue is First
+        int8_t Ivalue1;
+        Ivalue1 = fileContents[i];
+        float real1 = Ivalue1 / 127; //unmap the value
+        i += 1; // increment i to go to Qvalue
 
-        // modulate the first half of the integer
-        modem_modulate(mod, ((0xF0&sym_in)/16), &x);
+        // then Qvalue
+        if(i  >= lSize) break;
+        int8_t Qvalue1;
+        Qvalue1 = fileContents[i];
+        float imag1 = Qvalue1 / 127;
 
-        // Map each component of the complex symbol to a range of -127 t0 127
-        float real = 127 * crealf(x);
-        float imag = 127 * cimagf(x);
+        // Combine real and imaginary to get complex input to modem
+        float complex z1 = real1 +imag1*I;
 
-        // convert the numbers to  8 bit signed integer format
-        int8_t Ivalue;
-        int8_t Qvalue;
-        Ivalue = (int8_t) real;
-        Qvalue = (int8_t) imag;
-        // write binary to output file
-        fwrite(&Ivalue, 1, 1, fid);
-        fwrite(&Qvalue, 1, 1, fid);
+        unsigned int sym_out1; //demodulated first 4 bits
+        modem_demodulate(demod, z1, &sym_out1); //demodulates a symbol
+        if (debug = 1) printf("Successfully demodulated 1st symbol.");
 
+      // SECOND HALF
+        if(i  >= lSize) break;
+        i += 1; //increment i again to go to Ivalue
 
-        //modulate the second half of the integer
-        modem_modulate(mod, (0xF&sym_in), &x);
+        // Ivalue is First
+        int8_t Ivalue2;
+        Ivalue2 = fileContents[i];
+        float real2 = Ivalue2 / 127; //unmap the value
+        i += 1; // increment i to go to Qvalue
+        if(i  >= lSize) break;
+        // then Qvalue
+        int8_t Qvalue2;
+        Qvalue2 = fileContents[i];
+        float imag2 = Qvalue2 / 127;
+        i += 1;
+        // Combine real and imaginary to get complex input to modem
+        float complex z2 = real2 +imag2*I;
 
-        // Map each component of the complex symbol to a range of -127 t0 127
-        real = 127 * crealf(x);
-        imag = 127 * cimagf(x);
-
-        // convert the numbers to  8 bit signed integer format
-        Ivalue = (int8_t) real;
-        Qvalue = (int8_t) imag;
-        // write binary to output file
-        fwrite(&Ivalue, 1, 1, fid);
-        fwrite(&Qvalue, 1, 1, fid);
-
-        //fread(&num,1,1,fid);
-        //printf("%hd\n",num);
-
-    }
-    //read the binary data and print it to terminal if debug on ***this kindof works
-    if ((debug) == 1)
-    {
-        int8_t num[1000];
-        fread(num,1,1,fid);
-        for (int i=0; i <4000; i++)
-        {
-             printf("%hd\n",num[i]);
-        }
+        unsigned int sym_out2; //demodulated last 4 bits
+        modem_demodulate(demod, z2, &sym_out2); //demodulates a symbol
+        if (debug = 1) printf("Successfully demodulated 2nd symbol.");
+      // COMBINE THEM
+        int sym_out; //final ASCII value of symbol
+        //shift the first 4 bits up 4 and OR with second
+        sym_out = sym_out1 << 4 | sym_out2;
+        fprintf(fid, "%s", sym_out);
+        if (debug = 1) printf("%s\n",sym_out);
     }
 
     fclose(fid);
-    printf("results written to %s.\n", OUTPUT_FILENAME);
+    printf("Results written to %s.\n", OUTPUT_FILENAME);
 
-    modem_destroy(mod);
+    modem_destroy(demod);
     fclose(inputFile);
     free(fileContents);
 
