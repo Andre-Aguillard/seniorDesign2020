@@ -68,13 +68,11 @@ int main(int argc, char*argv[])
             lSize = ftell(inputFile);
             rewind( inputFile );
             /* allocate memory for entire content */
-            fileContents = malloc((lSize+1)*sizeof(*inputFile) );
+            fileContents = malloc((lSize)*sizeof(*inputFile) );
             if( !fileContents ) fclose(inputFile),fputs("memory alloc fails",stderr),exit(1);
 
             /* copy the file into the fileContents */
             fread( fileContents, lSize, 1 , inputFile);
-            /* NULL terminate the buffer */
-            fileContents[lSize] = '\0';
 
             break;
         default:
@@ -125,7 +123,10 @@ output file.\n");
         // Map each component of the complex symbol to a range of -127 to 127
         float real = 127 * crealf(x);
         float imag = 127 * cimagf(x);
-        if (debug==1)printf("Ivalue (real): %f\nQvalue (imag): %f\n", real, imag);
+        if (debug==1)
+        {
+            printf("Ivalue (real): %f\nQvalue (imag): %f\n", real, imag);
+        }
         // convert the numbers to  8 bit signed integer format
         int8_t Ivalue;
         int8_t Qvalue;
@@ -144,7 +145,7 @@ output file.\n");
         fwrite(&Ivalue, 1, 1, fid);
         fwrite(&Qvalue, 1, 1, fid);
 
-      // SECOND HALF
+      // SECOND
         if (debug==1) printf("second 4 bits: %hd\n",(0xF&sym_in));
         //modulate the second half of the integer
         modem_modulate(mod, (0xF&sym_in), &x);
@@ -172,7 +173,7 @@ output file.\n");
 // use readBin.c to read the Binary File
 
     fclose(fid);
-    printf("\n  Results written to %s.\n", OUTPUT_FILENAME);
+    printf("\nResults written to %s.\n", OUTPUT_FILENAME);
 
     modem_destroy(mod);
     fclose(inputFile);

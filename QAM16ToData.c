@@ -14,6 +14,7 @@ Output File is : data.txt
 #include <getopt.h>
 #include <liquid/liquid.h>
 #include <complex.h>
+#include <math.h>
 
 #define OUTPUT_FILENAME "output.txt"
 
@@ -70,7 +71,7 @@ int main(int argc, char*argv[])
 
             /* copy the file into the fileContents */
             fread(fileContents, sizeof(signed char), lSize , inputFile);
-
+            fclose(inputFile);
             break;
         default:
             exit(1);
@@ -80,12 +81,12 @@ int main(int argc, char*argv[])
     // create the modem object
     modem demod   = modem_create(ms);
 
-    if(debug=1) modem_print(demod);
+    // if(debug=1) modem_print(demod);
 
     // open output file
     FILE* fid = fopen(OUTPUT_FILENAME,"w+");
     if (!fid) perror(OUTPUT_FILENAME), exit(1);
-    if (debug = 1) printf("Opened the output file.\n");
+    //if (debug = 1) printf("Opened the output file.\n");
     /* Thoughts:
     Each ASCII character in the original file is broken down to it's binary equivalent.
         For example A = 65 = 01000001 in binary
@@ -99,31 +100,33 @@ int main(int argc, char*argv[])
     Each index of fileContents is either an I or a Q value.
     print to a file using fprintf */
 
+    char output[(lSize/2)];
+    int idx = 0; //output char array index
     int i = 0;
-    if(debug = 1) printf("Line before the while loop\n");
+    if(debug == 1) printf("lSize equals: %d \n",lSize);
 
     while ( i  < lSize)
     {
-        if (debug = 1) printf("In the while loop on i: %d", i );
+        if (debug == 1) printf("In the while loop on i= %d\n", i );
       //FIRST HALF
         // Ivalue is First
         int8_t Ivalue1;
         Ivalue1 = fileContents[i];
-        float real1 = Ivalue1 / 127; //unmap the value
+        float real1;
+        real1 = Ivalue1 / 127.0; //unmap the value
         i += 1; // increment i to go to Qvalue
 
-        // then Qvalue
+        // then Qvalueprintf("%s",output[idx]);
         if(i  >= lSize) break;
         int8_t Qvalue1;
         Qvalue1 = fileContents[i];
-        float imag1 = Qvalue1 / 127;
+        float imag1 = Qvalue1 / 127.0;
 
         // Combine real and imaginary to get complex input to modem
         float complex z1 = real1 +imag1*I;
 
         unsigned int sym_out1; //demodulated first 4 bits
         modem_demodulate(demod, z1, &sym_out1); //demodulates a symbol
-        if (debug = 1) printf("Successfully demodulated 1st symbol.");
 
       // SECOND HALF
         if(i  >= lSize) break;
@@ -132,33 +135,35 @@ int main(int argc, char*argv[])
         // Ivalue is First
         int8_t Ivalue2;
         Ivalue2 = fileContents[i];
-        float real2 = Ivalue2 / 127; //unmap the value
+        float real2 = Ivalue2 / 127.0; //unmap the value
         i += 1; // increment i to go to Qvalue
         if(i  >= lSize) break;
         // then Qvalue
         int8_t Qvalue2;
         Qvalue2 = fileContents[i];
-        float imag2 = Qvalue2 / 127;
+        float imag2 = Qvalue2 / 127.0;
         i += 1;
         // Combine real and imaginary to get complex input to modem
         float complex z2 = real2 +imag2*I;
 
         unsigned int sym_out2; //demodulated last 4 bits
         modem_demodulate(demod, z2, &sym_out2); //demodulates a symbol
-        if (debug = 1) printf("Successfully demodulated 2nd symbol.");
+
       // COMBINE THEM
-        int sym_out; //final ASCII value of symbol
+        char sym_out; //final ASCII value of symbol
         //shift the first 4 bits up 4 and OR with second
         sym_out = sym_out1 << 4 | sym_out2;
-        fprintf(fid, "%s", sym_out);
-        if (debug = 1) printf("%s\n",sym_out);
+        // char printThis = (char) sym_out;
+        output[idx] = sym_out;
+        idx += 1;
+        if (debug == 1) printf("%d\n", sym_out);
     }
-
+    fprintf(fid,"%s\n",output);
+    if (debug == 1) printf("%s\n", output);
     fclose(fid);
     printf("Results written to %s.\n", OUTPUT_FILENAME);
 
     modem_destroy(demod);
-    fclose(inputFile);
     free(fileContents);
 
     return 0;
